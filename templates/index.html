@@ -53,6 +53,37 @@
         .product-icon {
             font-size: 2rem;
         }
+        
+        .kafka-log {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+        
+        .log-entry {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+        }
+        
+        .log-produce {
+            color: #60a5fa;
+        }
+        
+        .log-consume {
+            color: #fbbf24;
+        }
+        
+        .log-ack {
+            color: #34d399;
+        }
+        
+        .log-complete {
+            color: #10b981;
+        }
+        
+        .log-system {
+            color: #a78bfa;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen text-white">
@@ -62,7 +93,7 @@
             <div class="flex items-center justify-between mb-4">
                 <div>
                     <h1 class="text-4xl font-bold text-blue-400 mb-2">Apache Kafka</h1>
-                    <p class="text-slate-400 text-lg">Sistema de Pedidos en Tiempo Real</p>
+                    <p class="text-slate-400 text-lg">Sistema de Pedidos en Tiempo Real con Logs de Eventos</p>
                 </div>
                 <button onclick="resetDemo()" class="bg-red-600 hover:bg-red-700 px-6 py-2 rounded-lg font-semibold transition">
                     Reiniciar Demo
@@ -111,7 +142,7 @@
         </div>
 
         <!-- Flujo de Kafka -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             <!-- Productor (Tópico) -->
             <div class="bg-slate-700 rounded-lg p-6 border border-slate-600">
                 <div class="flex items-center mb-4">
@@ -154,8 +185,27 @@
             </div>
         </div>
 
+        <!-- Panel de Logs de Kafka -->
+        <div class="bg-slate-800 rounded-lg p-6 border border-slate-600 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <h2 class="text-xl font-bold text-green-400">Kafka Event Log</h2>
+                </div>
+                <span class="text-slate-400 text-sm">Offset: <span id="current-offset">0</span></span>
+            </div>
+            <p class="text-slate-400 text-sm mb-4">Registro de todos los eventos del sistema (Produce, Consume, ACK, Complete)</p>
+            <div id="kafka-logs" class="kafka-log bg-slate-900 rounded p-4 max-h-64 overflow-y-auto border border-slate-700">
+                <div class="log-entry log-system">
+                    <span class="text-slate-500">[00:00:00.000]</span> <span class="text-slate-400">[SYSTEM]</span> <span>Aplicación iniciada - Esperando eventos...</span>
+                </div>
+            </div>
+        </div>
+
         <!-- Información de Kafka -->
-        <div class="mt-8 bg-slate-700 rounded-lg p-6 border border-slate-600">
+        <div class="bg-slate-700 rounded-lg p-6 border border-slate-600">
             <h3 class="text-lg font-bold text-blue-400 mb-3">Conceptos Demostrados</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
                 <div class="flex items-start">
@@ -172,8 +222,8 @@
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                     </svg>
                     <div>
-                        <p class="font-semibold">Tiempo Real</p>
-                        <p class="text-slate-400">Procesamiento instantáneo</p>
+                        <p class="font-semibold">Persistencia</p>
+                        <p class="text-slate-400">Todos los eventos quedan registrados</p>
                     </div>
                 </div>
                 <div class="flex items-start">
@@ -181,8 +231,8 @@
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                     </svg>
                     <div>
-                        <p class="font-semibold">Escalabilidad</p>
-                        <p class="text-slate-400">Maneja múltiples pedidos</p>
+                        <p class="font-semibold">Offsets</p>
+                        <p class="text-slate-400">Posición de cada evento en el tópico</p>
                     </div>
                 </div>
                 <div class="flex items-start">
@@ -190,8 +240,8 @@
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                     </svg>
                     <div>
-                        <p class="font-semibold">Persistencia</p>
-                        <p class="text-slate-400">Datos almacenados en tópicos</p>
+                        <p class="font-semibold">Confirmaciones</p>
+                        <p class="text-slate-400">ACK de recepción y procesamiento</p>
                     </div>
                 </div>
             </div>
@@ -277,17 +327,54 @@
                 });
         }
 
+        function updateLogs() {
+            fetch('/api/logs')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('current-offset').textContent = data.current_offset;
+                    
+                    const logsContainer = document.getElementById('kafka-logs');
+                    if (data.logs.length === 0) {
+                        logsContainer.innerHTML = '<div class="log-entry log-system"><span class="text-slate-500">[00:00:00.000]</span> <span class="text-slate-400">[SYSTEM]</span> <span>Esperando eventos...</span></div>';
+                    } else {
+                        logsContainer.innerHTML = data.logs.map(log => {
+                            let logClass = 'log-system';
+                            if (log.type === 'PRODUCE') logClass = 'log-produce';
+                            else if (log.type === 'CONSUME') logClass = 'log-consume';
+                            else if (log.type === 'ACK') logClass = 'log-ack';
+                            else if (log.type === 'COMPLETE') logClass = 'log-complete';
+                            
+                            return `
+                                <div class="log-entry ${logClass}">
+                                    <span class="text-slate-500">[${log.timestamp}]</span>
+                                    <span class="text-slate-400">[${log.type}]</span>
+                                    <span class="text-slate-300">[Offset: ${log.offset}]</span>
+                                    <span>${log.message}</span>
+                                </div>
+                            `;
+                        }).join('');
+                        
+                        // Auto-scroll al final
+                        logsContainer.scrollTop = logsContainer.scrollHeight;
+                    }
+                });
+        }
+
         function resetDemo() {
             fetch('/api/reset', { method: 'POST' })
                 .then(response => response.json())
                 .then(() => {
                     updateOrders();
+                    updateLogs();
                 });
         }
 
         // Actualizar cada 500ms para ver los cambios en tiempo real
         setInterval(updateOrders, 500);
+        setInterval(updateLogs, 500);
         updateOrders();
+        updateLogs();
     </script>
 </body>
 </html>
+
